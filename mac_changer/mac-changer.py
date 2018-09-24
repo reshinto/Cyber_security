@@ -28,11 +28,11 @@ def get_arguments():
     return _options
 
 
-def change_mac(shell, interface, new_mac, old_mac="hidden"):
+def change_mac(shell, interface, new_mac):
     """
     Disable interface -> change MAC address -> enable interface
     """
-    print(f"Changing MAC address from {old_mac} to {new_mac} for {interface}")
+    print(f"[+] Changing MAC address for {interface}")
     subprocess.call([shell, interface, "down"])
     subprocess.call([shell, interface, "hw", "ether", new_mac])
     subprocess.call([shell, interface, "up"])
@@ -51,19 +51,25 @@ def get_MAC(shell, interface):
         return "[-] Could not find MAC address"
 
 
-def check_change(old="hidden"):
-    _current = get_MAC(options.shell, options.interface)
-    if _current == options.new_mac:
-        print(f"[+] MAC address was successfully changed from {old} to {_current}")
+def check_change(shell, interface, new_mac, old_mac="hidden"):
+    _current = get_MAC(shell, interface)
+    if _current == new_mac:
+        print(f"[+] MAC address was successfully changed from {old_mac} to {_current}")
     else:
         print("[+] MAC address was not changed.")
 
-options = get_arguments()
-old_mac = get_MAC(options.shell, options.interface)
-change_mac(options.shell, options.interface, options.new_mac, old_mac)
 
-check_change(old_mac)
+def main():
+    options = get_arguments()
+    # Save initial MAC address (not required)
+    old_mac = get_MAC(options.shell, options.interface)
+    change_mac(options.shell, options.interface, options.new_mac)
+    check_change(options.shell, options.interface, options.new_mac, old_mac)
 
-change_mac(options.shell, options.interface, old_mac)
-print(f"current MAC address: {get_MAC(options.shell, options.interface)}")
+    # delete the following if you do not want to change back mac address
+    change_mac(options.shell, options.interface, old_mac)
+    print(f"current MAC address: {get_MAC(options.shell, options.interface)}")
 
+
+if __name__ == "__main__":
+    main()
