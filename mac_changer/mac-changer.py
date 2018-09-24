@@ -1,11 +1,28 @@
 #!/usr/bin/env python3
 
 import subprocess  # required to run shell commands
+import optparse  # required for getting user input from args
 
 
-ip_command = input("ip address shell command: ")
-interface = input("ethernet interface (eg. eth0): ")
-new_mac = input("new MAC (12 digits eg.00:11:22:33:44:55): ")
+
+parser = optparse.OptionParser()
+
+parser.add_option("-s", "--shell", dest="ip_command",
+        help="shell command for ip address (eg. ifconfig)")
+# give -i or --interface option, store in dest, give help if user requires
+parser.add_option("-i", "--interface", dest="interface",
+        help="Interface to change MAC address")
+parser.add_option("-m", "--mac", dest="new_mac",
+        help="New MAC address")
+
+# parser.parse_args() -> will allow user to parse but not return
+# the following command
+# eg.python mac-changer.py -s ifconfig -i eth0 -m 00:11:22:33:44:55
+(options, arguments) = parser.parse_args()  # return options & arguments  value
+
+ip_command = options.ip_command
+interface = options.interface
+new_mac = options.new_mac
 
 print(f"+ Changing MAC address for {interface} to {new_mac}")
 # disable ethernet_interface if it exist
