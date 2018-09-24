@@ -2,6 +2,7 @@
 
 import subprocess  # required to run shell commands
 import optparse  # required for getting user input from args
+import re
 
 
 def get_arguments():
@@ -19,25 +20,41 @@ def get_arguments():
             help="New MAC address")
     (_options, _arguments) = p.parse_args()
     if not _options.shell:
-        # code to handle error
         p.error("[-] Please specify a shell command, use --help for more info")
     elif not _options.interface:
         p.error("[-] Please specify an interface, use --help for more info")
     elif not _options.new_mac:
-        # code to handle error
         p.error ("[-] Please specify a new MAC address, use --help for more info")
     return _options
 
 
-def change_mac(shell, interface, new_mac):
+def change_mac(shell, interface, new_mac, old_mac="hidden"):
     """
     Disable interface -> change MAC address -> enable interface
     """
     subprocess.call([shell, interface, "down"])
     subprocess.call([shell, interface, "hw", "ether", new_mac])
     subprocess.call([shell, interface, "up"])
-    print(f"MAC address has been changed to {new_mac} for {interface}")
+    print(
+    f"MAC address {old_mac} has been changed to {new_mac} for {interface}")
+
+
+def get_MAC(shell, interface):
+    # requires .decode("utf-8") if using python3
+    output = subprocess.check_output([shell,
+        interface]).decode("utf-8")
+    search_result = re.search(r"\w\w:\w\w:\w\w:\w\w:\w\w:\w\w",
+            output)
+    if search_result:
+        # use xxx.group(0) to display 1st search result
+        return search_result.group(0)
+    else:
+        return "[-] Could not find MAC address"
 
 
 options = get_arguments()
-change_mac(options.shell, options.interface, options.new_mac)
+old_mac = get_MAC(options.shell, options.interface)
+change_mac(options.shell, options.interface, options.new_mac, old_mac)
+change_mac(options.shell, options.interface, old_mac)
+print(f"current MAC address: {get_MAC(options.shell, options.interface)}")
+
