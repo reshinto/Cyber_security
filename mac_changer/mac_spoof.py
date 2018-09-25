@@ -22,17 +22,17 @@ def get_arguments():
                         help="Interface to change MAC address")
     parser.add_argument("-m", "--mac", dest="new_mac",
                         help="New MAC address")
-    (_options, _arguments) = parser.parse_args()
-    if not _options.shell:
+    _args = parser.parse_args()
+    if not _args.shell:
         parser.error(
             "[-] Please specify a shell command, use --help for more info")
-    elif not _options.interface:
+    elif not _args.interface:
         parser.error("[-] Please specify an interface, "
                      "use --help for more info")
-    elif not _options.new_mac:
+    elif not _args.new_mac:
         parser.error("[-] Please specify a new MAC address, "
                      "use --help for more info")
-    return _options
+    return _args
 
 
 def change_mac(shell, interface, new_mac, kali=False):
@@ -102,15 +102,15 @@ def check_change(shell, interface, new_mac):
 
 def main():
     """Main program engine"""
-    options = get_arguments()
+    args = get_arguments()
     # Save initial MAC address (not required)
-    old_mac = get_mac(options.shell, options.interface)
-    change_mac(options.shell, options.interface, options.new_mac)
-    check_change(options.shell, options.interface, options.new_mac)
+    old_mac = get_mac(args.shell, args.interface)
+    change_mac(args.shell, args.interface, args.new_mac)
+    check_change(args.shell, args.interface, args.new_mac)
 
     # delete the following if you do not want to change back mac address
-    change_mac(options.shell, options.interface, old_mac)
-    print(f"current MAC address: {get_mac(options.shell, options.interface)}")
+    change_mac(args.shell, args.interface, old_mac)
+    print(f"current MAC address: {get_mac(args.shell, args.interface)}")
 
 
 if __name__ == "__main__":
