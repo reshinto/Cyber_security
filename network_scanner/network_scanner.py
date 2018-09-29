@@ -29,6 +29,9 @@ def scan(ip):
     arp_request_broadcast = broadcast/arp_request
     print(arp_request_broadcast.summary())
 
+    # display more details
+    arp_request_broadcast.show()
+
 
 # 1/24 = range from 0 to 254
 # this will allow you to scan all ip address
