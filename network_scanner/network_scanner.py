@@ -24,7 +24,10 @@ def scan(ip):
     # create an ethernet object
     # use dst: DestMACField as arg, search by scapy.ls(scapy.Ether())
     broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
-    print(broadcast.summary())
+
+    # combine request and broadcast with /
+    arp_request_broadcast = broadcast/arp_request
+    print(arp_request_broadcast.summary())
 
 
 # 1/24 = range from 0 to 254
