@@ -18,15 +18,10 @@ def scan(ip):
     scapy.ARP() class allows us to print a summary of the current objects
     that we just created
     """
-    arp_request = scapy.ARP()
-    arp_request.pdst = ip
+    arp_request = scapy.ARP(pdst=ip)
 
     # print summary
     print(arp_request.summary())
-
-    # use scapy.ls() method to get names of fields that are settable
-    """put in the class name to get names of the field that are settable"""
-    scapy.ls(scapy.ARP())
 
     # Part 2: Set destination MAC to broadcast MAC
 
