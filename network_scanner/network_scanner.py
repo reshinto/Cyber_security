@@ -20,10 +20,11 @@ def scan(ip):
     """
     arp_request = scapy.ARP(pdst=ip)
 
-    # print summary
-    print(arp_request.summary())
-
     # Part 2: Set destination MAC to broadcast MAC
+    # create an ethernet object
+    # use dst: DestMACField as arg, search by scapy.ls(scapy.Ether())
+    broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
+    print(broadcast.summary())
 
 
 # 1/24 = range from 0 to 254
