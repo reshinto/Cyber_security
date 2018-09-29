@@ -10,7 +10,23 @@ def scan(ip):
     ip address by using the Address Resolution Protocol (arp) method:
     scapy.arping(xxx)
     """
-    scapy.arping(ip)
+    # writing our own arp method to discover clients on network
+    # Create arp request directed to broadcast MAC asking for IP
+    # has 2 main parts
+    # Part 1: Use ARP to ask who has target IP
+    """
+    scapy.ARP() class allows us to print a summary of the current objects
+    that we just created
+    """
+    arp_request = scapy.ARP()
+    # print summary
+    print(arp_request.summary())
+
+    # use scapy.ls() method to get names of fields that are settable
+    """put in the class name to get names of the field that are settable"""
+    scapy.ls(scapy.ARP())
+
+    # Part 2: Set destination MAC to broadcast MAC
 
 
 # 1/24 = range from 0 to 254
