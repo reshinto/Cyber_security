@@ -19,6 +19,8 @@ def scan(ip):
     that we just created
     """
     arp_request = scapy.ARP()
+    arp_request.pdst = ip
+
     # print summary
     print(arp_request.summary())
 
