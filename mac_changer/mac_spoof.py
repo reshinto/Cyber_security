@@ -119,6 +119,9 @@ def main():
     args = get_arguments()
     os = platform.system()
     if os == "Linux":
+        linux_type = subprocess.check_output(["lsb_release",
+                                              "-is"]).decode("utf-8")[:-1]
+        print(linux_type)
         args.shell = "ip"
         old_mac = get_mac(args.shell, args.interface)
         _new_change_mac(args.shell, args.interface, args.new_mac)
