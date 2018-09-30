@@ -14,19 +14,22 @@ def scan(ip):
 
     # use verbose to get rid of header text
     answered_list, unanswered_list = scapy.srp(arp_request_broadcast, timeout=1, verbose=False)
-    return answered_list
 
-
-def show(scanned_list_result):
-    print("IP\t\t|\tMAC Address\n" + "-"*50)
     # parsing response
-    for i in scanned_list_result:
-        # psrc to display IP address, hwsrc to display MAC address
-        print(f"{i[1].psrc}\t|\t{i[1].hwsrc}\n" + "-"*50)
+    clients_list = []
+    for i in answered_list:
+        client_dict = {"ip": i[1].psrc, "mac": i[1].hwsrc}
+        clients_list.append(client_dict)
+    return clients_list
+
+def show(clients_list):
+    print("IP\t\tMAC Address\n" + "-"*40)
+    for client in clients_list:
+        print(f"{client['ip']}\t{client['mac']}")
 
 
 # 1/24 = range from 0 to 254
 # this will allow you to scan all ip address
 # real ip, use e.g.: xxx.xxx.1.1/24
-result = scan("10.0.2.1/24")
-show(result)
+scan_result = scan("10.0.2.1/24")
+show(scan_result)
