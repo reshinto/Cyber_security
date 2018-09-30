@@ -11,26 +11,19 @@ def scan(ip):
     scapy.arping(xxx)
     """
     # writing our own arp method to discover clients on network
-    # Create arp request directed to broadcast MAC asking for IP
-    # has 2 main parts
-    # Part 1: Use ARP to ask who has target IP
-    """
-    scapy.ARP() class allows us to print a summary of the current objects
-    that we just created
-    """
     arp_request = scapy.ARP(pdst=ip)
-
-    # Part 2: Set destination MAC to broadcast MAC
-    # create an ethernet object
-    # use dst: DestMACField as arg, search by scapy.ls(scapy.Ether())
     broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
-
-    # combine request and broadcast with /
     arp_request_broadcast = broadcast/arp_request
-    print(arp_request_broadcast.summary())
 
-    # display more details
-    arp_request_broadcast.show()
+    # send packet & receive response
+    """send & receive function
+    there is also a scapy.sr()
+    difference between srp and sr is, srp allows us to send packets with
+    a custom Ether packet
+    add timeout you quit if get no response within 1 sec
+    """
+    answered, unanswered = scapy.srp(arp_request_broadcast, timeout=1)
+    print(answered.summary())
 
 
 # 1/24 = range from 0 to 254
