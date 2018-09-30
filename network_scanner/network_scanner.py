@@ -22,8 +22,15 @@ def scan(ip):
     a custom Ether packet
     add timeout you quit if get no response within 1 sec
     """
-    answered, unanswered = scapy.srp(arp_request_broadcast, timeout=1)
-    print(answered.summary())
+    answered_list, unanswered_list = scapy.srp(arp_request_broadcast, timeout=1)
+
+    # parsing response
+    for i in answered_list:
+        # print IP address
+        print(i[1].psrc)
+        # print MAC address
+        print(i[1].hwsrc)
+        print()
 
 
 # 1/24 = range from 0 to 254
