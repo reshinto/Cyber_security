@@ -7,6 +7,7 @@ TODO: implement windows ipconfig command
 import subprocess  # required to run shell commands
 import argparse  # required for getting user input from args
 import re
+import platform
 
 
 def get_arguments():
@@ -40,7 +41,6 @@ def change_mac(shell, interface, new_mac, kali=False):
     shell = ifconfig
     Disable interface -> change MAC address -> enable interface
     """
-    print(f"[+] Changing MAC address for {interface}")
     subprocess.call([shell, interface, "down"])
     _change_mac(shell, interface, new_mac, kali)
     subprocess.call([shell, interface, "up"])
@@ -51,6 +51,7 @@ def _change_mac(shell, interface, new_mac, kali=False):
     Check if hw is required
     hw is required for Kali linux
     """
+    print(f"[+] Changing MAC address for {interface}")
     if kali is False:
         subprocess.call([shell, interface, "ether", new_mac])
     else:
@@ -63,9 +64,16 @@ def new_change_mac(shell, interface, new_mac):
     """
     print(f"[+] Changing MAC address for {interface}")
     subprocess.call([shell, "link", "set", "dev", interface, "down"])
-    subprocess.call(
-        [shell, "link", "set", "dev", interface, "address", new_mac])
+    _new_change_mac(shell, interface, new_mac)
     subprocess.call([shell, "link", "set", "dev", interface, "up"])
+
+
+def _new_change_mac(shell, interface, new_mac):
+    """
+    shell = ip without disabling and renabling of wifi
+    """
+    subprocess.call([shell, "link", "set", "dev",
+                     interface, "address", new_mac])
 
 
 def get_mac(shell, interface):
@@ -103,13 +111,23 @@ def check_change(shell, interface, new_mac):
 def main():
     """Main program engine"""
     args = get_arguments()
-    # Save initial MAC address (not required)
-    old_mac = get_mac(args.shell, args.interface)
-    change_mac(args.shell, args.interface, args.new_mac)
-    check_change(args.shell, args.interface, args.new_mac)
-
+    os = platform.system()
+    if os == "Linux":
+        # Save initial MAC address (not required)
+        old_mac = get_mac(args.shell, args.interface)
+        change_mac(args.shell, args.interface, args.new_mac)
+        check_change(args.shell, args.interface, args.new_mac)
+    elif os == "Darwin":
+        args.shell = "ifconfig"
+        old_mac = get_mac(args.shell, args.interface)
+        _change_mac(args.shell, args.interface, args.new_mac)
+        check_change(args.shell, args.interface, args.new_mac)
+    elif os == "Windows":
+        pass
+    else:
+        print("Unknown OS")
     # delete the following if you do not want to change back mac address
-    change_mac(args.shell, args.interface, old_mac)
+    _change_mac(args.shell, args.interface, old_mac)
     print(f"current MAC address: {get_mac(args.shell, args.interface)}")
 
 
