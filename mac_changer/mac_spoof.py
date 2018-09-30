@@ -121,14 +121,22 @@ def main():
     if os == "Linux":
         linux_type = subprocess.check_output(["lsb_release",
                                               "-is"]).decode("utf-8")[:-1]
-        print(linux_type)
-        args.shell = "ip"
-        old_mac = get_mac(args.shell, args.interface)
-        _new_change_mac(args.shell, args.interface, args.new_mac)
-        check_change(args.shell, args.interface, args.new_mac)
+        if linux_type == "Ubuntu":
+            args.shell = "ip"
+            old_mac = get_mac(args.shell, args.interface)
+            _new_change_mac(args.shell, args.interface, args.new_mac)
+            check_change(args.shell, args.interface, args.new_mac)
 
-        # delete the following if you do not want to change back mac address
-        _new_change_mac(args.shell, args.interface, old_mac)
+            # delete the following if you do not want to change back mac address
+            _new_change_mac(args.shell, args.interface, old_mac)
+        elif linux_type == "Kali":
+            args.shell = "ifconfig"
+            old_mac = get_mac(args.shell, args.interface)
+            _change_mac(args.shell, args.interface, args.new_mac, kali=True)
+            check_change(args.shell, args.interface, args.new_mac)
+
+            # delete the following if you do not want to change back mac address
+            _change_mac(args.shell, args.interface, old_mac, kali=True)
     elif os == "Darwin":
         args.shell = "ifconfig"
         old_mac = get_mac(args.shell, args.interface)
