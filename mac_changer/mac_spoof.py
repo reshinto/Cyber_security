@@ -24,8 +24,8 @@ def get_arguments():
                         help="New MAC address")
     _args = parser.parse_args()
     if not _args.shell:
-        parser.error(
-            "[-] Please specify a shell command, use --help for more info")
+        parser.error("[-] Please specify a shell command, "
+                     "use --help for more info")
     elif not _args.interface:
         parser.error("[-] Please specify an interface, "
                      "use --help for more info")

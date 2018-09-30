@@ -1,7 +1,23 @@
 #!/usr/bin/env python3
-
-
+"""
+Network scanner that scans for 1 or all IP addresses connected
+within the same network, to get its MAC Address
+"""
+import argparse
 import scapy.all as scapy
+
+
+def get_arguments():
+    """
+    Run and input IP address in the command line
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-t", "--target", dest="target",
+                        help="target IP address or range e.g.: 10.0.2.1/24")
+    _args = parser.parse_args()
+    if not _args.target:
+        parser.error("[-] Please specify a target, use --help for more info")
+    return _args
 
 
 def scan(ip):
@@ -13,7 +29,8 @@ def scan(ip):
     arp_request_broadcast = broadcast/arp_request
 
     # use verbose to get rid of header text
-    answered_list, unanswered_list = scapy.srp(arp_request_broadcast, timeout=1, verbose=False)
+    answered_list = scapy.srp(arp_request_broadcast,
+                              timeout=1, verbose=False)[0]
 
     # parsing response
     clients_list = []
@@ -22,14 +39,20 @@ def scan(ip):
         clients_list.append(client_dict)
     return clients_list
 
+
 def show(clients_list):
+    """prints list of IP and MAC addresses"""
     print("IP\t\tMAC Address\n" + "-"*40)
     for client in clients_list:
         print(f"{client['ip']}\t{client['mac']}")
 
 
-# 1/24 = range from 0 to 254
-# this will allow you to scan all ip address
-# real ip, use e.g.: xxx.xxx.1.1/24
-scan_result = scan("10.0.2.1/24")
-show(scan_result)
+def main():
+    """Run main program"""
+    arg = get_arguments()
+    scan_result = scan(arg.target)
+    show(scan_result)
+
+
+if __name__ == "__main__":
+    main()
