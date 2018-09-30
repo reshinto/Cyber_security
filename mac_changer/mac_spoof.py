@@ -113,21 +113,30 @@ def main():
     args = get_arguments()
     os = platform.system()
     if os == "Linux":
-        # Save initial MAC address (not required)
-        old_mac = get_mac(args.shell, args.interface)
-        change_mac(args.shell, args.interface, args.new_mac)
+        try:
+            args.shell = "ifconfig"
+            old_mac = get_mac(args.shell, args.interface)
+            _change_mac(args.shell, args.interface, args.new_mac)
+        except FileNotFoundError:
+            args.shell = "ip"
+            old_mac = get_mac(args.shell, args.interface)
+            _new_change_mac(args.shell, args.interface, args.new_mac)
         check_change(args.shell, args.interface, args.new_mac)
+
+        # delete the following if you do not want to change back mac address
+        _new_change_mac(args.shell, args.interface, old_mac)
     elif os == "Darwin":
         args.shell = "ifconfig"
         old_mac = get_mac(args.shell, args.interface)
         _change_mac(args.shell, args.interface, args.new_mac)
         check_change(args.shell, args.interface, args.new_mac)
+
+        # delete the following if you do not want to change back mac address
+        _change_mac(args.shell, args.interface, old_mac)
     elif os == "Windows":
         pass
     else:
         print("Unknown OS")
-    # delete the following if you do not want to change back mac address
-    _change_mac(args.shell, args.interface, old_mac)
     print(f"current MAC address: {get_mac(args.shell, args.interface)}")
 
 
