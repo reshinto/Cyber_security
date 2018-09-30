@@ -40,6 +40,7 @@ def change_mac(shell, interface, new_mac, kali=False):
     """
     shell = ifconfig
     Disable interface -> change MAC address -> enable interface
+    change kali=True if using this function on kali
     """
     subprocess.call([shell, interface, "down"])
     _change_mac(shell, interface, new_mac, kali)
@@ -50,6 +51,7 @@ def _change_mac(shell, interface, new_mac, kali=False):
     """
     Check if hw is required
     hw is required for Kali linux
+    change kali=True if using this function on kali
     """
     print(f"[+] Changing MAC address for {interface}")
     if kali is False:
@@ -61,6 +63,8 @@ def _change_mac(shell, interface, new_mac, kali=False):
 def new_change_mac(shell, interface, new_mac):
     """
     shell = ip
+    works in kali and ubuntu without install
+    Mac OS X requires installation
     """
     print(f"[+] Changing MAC address for {interface}")
     subprocess.call([shell, "link", "set", "dev", interface, "down"])
@@ -71,6 +75,8 @@ def new_change_mac(shell, interface, new_mac):
 def _new_change_mac(shell, interface, new_mac):
     """
     shell = ip without disabling and renabling of wifi
+    works in kali and ubuntu without install
+    Mac OS X requires installation
     """
     subprocess.call([shell, "link", "set", "dev",
                      interface, "address", new_mac])
@@ -113,14 +119,9 @@ def main():
     args = get_arguments()
     os = platform.system()
     if os == "Linux":
-        try:
-            args.shell = "ifconfig"
-            old_mac = get_mac(args.shell, args.interface)
-            _change_mac(args.shell, args.interface, args.new_mac)
-        except FileNotFoundError:
-            args.shell = "ip"
-            old_mac = get_mac(args.shell, args.interface)
-            _new_change_mac(args.shell, args.interface, args.new_mac)
+        args.shell = "ip"
+        old_mac = get_mac(args.shell, args.interface)
+        _new_change_mac(args.shell, args.interface, args.new_mac)
         check_change(args.shell, args.interface, args.new_mac)
 
         # delete the following if you do not want to change back mac address
