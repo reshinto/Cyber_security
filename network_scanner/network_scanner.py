@@ -2,6 +2,7 @@
 """
 Network scanner that scans for 1 or all IP addresses connected
 within the same network, to get its MAC Address
+Must run as admin: in mac or linux, use sudo
 """
 import argparse
 import scapy.all as scapy
